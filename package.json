@@ -1,0 +1,15 @@
+{
+  "name": "multiVision",
+  "version": "0.0.0",
+  "description": "multivision tech training ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "quizzicol",
+  "license": "ISC",
+  "dependencies": {
+    "jade": "^1.4.2",
+    "express": "^4.6.1"
+  }
+}
