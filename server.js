@@ -9,8 +9,10 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
 
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';  // will default to development
+// run 'NODE_ENV=production nodemon server.js' in production
 
+console.log('ENV: ', env);
 
 var app = express();
 
@@ -41,8 +43,15 @@ app.use(express.static(__dirname + '/public'));
 
 //--------------------------------------------------------------------------------------------------------------------
 // mongoose
-// connect to Mongo
-mongoose.connect('mongodb://localhost/multiVision');                // connect to the mongo db
+// connect to Mongo.
+if (env === 'development') {
+    // local db if in development mode
+    mongoose.connect('mongodb://localhost/multiVision');                // connect to the mongo db
+} else {
+    // mongo lab db if in production
+    mongoose.connect('mongodb://quizzicol:multivision@ds047107.mongolab.com:47107/multivision');
+}
+
 var db = mongoose.connection;                                       // capture the connection as 'db'
 db.on('error', console.error.bind(console, 'connection error...')); // if there is a connection error, report it
 db.once('open', function callback() {                               // when the connection first opens, log it.
@@ -82,7 +91,7 @@ app.get('*', function (req, res) {
 });
 
 
-var port = 3030;
+var port = process.env.PORT || 3030;
 app.listen(port);
 
 console.log('Listening on port ' + port + '...');
