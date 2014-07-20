@@ -2,83 +2,88 @@
  * Created by colinyork on 19/07/2014.
  */
 
+// requires
 var express = require('express');
-var stylus = require('stylus');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
+var passport = require('passport');
 var mongoose = require('mongoose');
+var LocalStrategy = require('passport-local').Strategy;  // This is how passport implements authentication
+                                                         // Local implies our own database rather than oAuth
 
-
+// specify the environment, will default to 'development'
+// run 'NODE_ENV=production nodemon server.js' for production
+// NODE_ENV in Heroku set to 'production'
 var env = process.env.NODE_ENV = process.env.NODE_ENV || 'development';  // will default to development
-// run 'NODE_ENV=production nodemon server.js' in production
 
 console.log('ENV: ', env);
 
 var app = express();
 
-// stylys compilation
-function compile (str, path) {
-    return stylus(str).set('filename', path);
-}
+
+// read in config object and pass respective environment data to the 'config' variable.
+var config = require('./server/config/config.js')[env];
 
 
-app.set('views', __dirname + '/server/views' );
-app.set('view engine', 'jade');
+// set up express
+require('./server/config/express')(app, config);
 
-app.use(logger('dev'));
+// set up mongoose
+require('./server/config/mongoose.js')(config);
 
-app.use(bodyParser());
+//---------------------------------------------------------------------------------------------------------------------
+// authentication
 
-app.use(stylus.middleware (
-    {
-        src: __dirname + 'public',
-        compile: compile
+// define User model
+var User = mongoose.model('User');
+
+// define passport LocalStrategy.
+// this is called from routes as part of the passport authenticate method
+// username and password are captured from the req object by body parser.
+passport.use(new LocalStrategy(
+    function(username, password, done) {                // done is a callback
+
+        User.findOne( {username:username}, function(err, user) {
+
+            if(user) {
+
+                console.log("Found user data : ", user);
+                return done(null, user);
+
+            } else {
+
+                console.log("No user found.");
+                return done(null, false);
+
+            }
+        });
     }
+
 ));
 
+// serialize/deserialize user for session storage.
 
-// static route handling.  e.g. enable access to /public/favicon.ico
-app.use(express.static(__dirname + '/public'));
+passport.serializeUser(function (user, done) {
+    if (user) {
+        done(null, user._id);
+    }
+});
 
+passport.deserializeUser(function(id, done) {
+    User.findOne({_id:id}).exec(function(err, user) {
 
-//--------------------------------------------------------------------------------------------------------------------
-// mongoose
-// connect to Mongo.
-if (env === 'development') {
-    // local db if in development mode
-    mongoose.connect('mongodb://localhost/multiVision');                // connect to the mongo db
-} else {
-    // mongo lab db if in production
-    mongoose.connect('mongodb://quizzicol:multivision@ds047107.mongolab.com:47107/multivision');
-}
-
-var db = mongoose.connection;                                       // capture the connection as 'db'
-db.on('error', console.error.bind(console, 'connection error...')); // if there is a connection error, report it
-db.once('open', function callback() {                               // when the connection first opens, log it.
-    console.log('multiVision db opened');
+        if(user) {
+            return done(null, user);
+        } else {
+            return done(null, false);
+        }
+    })
 });
 
 
-
-//--------------------------------------------------------------------------------------------------------------------
-// when some requests a partial, it will pull the relevant partial from /public/app directory or relevant
-// subdirectory depending on req.params[0] passed in.
-app.get('/partials/*', function(req, res) {
-
-    res.render('../../public/app/' + req.params[0]);
-
-});
+//---------------------------------------------------------------------------------------------------------------------
+// set up routes
+require('./server/config/routes.js')(app);
 
 
-// For all other routes.  Deliver the index page.  This enables client side routing to work
-app.get('*', function (req, res) {
+app.listen(config.port);
 
-    res.render('index');
-
-});
-
-
-var port = process.env.PORT || 3030;
-app.listen(port);
-
-console.log('Listening on port ' + port + '...');
+console.log('Listening on port ' + config.port + '...');
