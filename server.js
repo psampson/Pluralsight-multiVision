@@ -58,25 +58,14 @@ db.once('open', function callback() {                               // when the 
     console.log('multiVision db opened');
 });
 
-// configure mongoose schema
-var messageSchema = mongoose.Schema({
-        message: String
-    });
 
-// configure mongoose model
-var Message = mongoose.model('Message', messageSchema);
-var mongoMessage;
-
-// query database
-Message.findOne().exec( function( err, messageDoc ) {
-        mongoMessage = messageDoc.message;
-    });
 
 //--------------------------------------------------------------------------------------------------------------------
-// when some requests a partial, it will pull the partial from the partials directory.
-app.get('/partials/:partialPath', function(req, res) {
+// when some requests a partial, it will pull the relevant partial from /public/app directory or relevant
+// subdirectory depending on req.params[0] passed in.
+app.get('/partials/*', function(req, res) {
 
-    res.render('partials/' + req.params.partialPath);
+    res.render('../../public/app/' + req.params[0]);
 
 });
 
@@ -84,9 +73,7 @@ app.get('/partials/:partialPath', function(req, res) {
 // For all other routes.  Deliver the index page.  This enables client side routing to work
 app.get('*', function (req, res) {
 
-    res.render('index', {
-        mongoMessage: mongoMessage
-    });
+    res.render('index');
 
 });
 
