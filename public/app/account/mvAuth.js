@@ -4,6 +4,8 @@
 
 angular.module('app').factory('mvAuth', function($http, mvIdentity, $q) {
     return {
+
+        // authenticate user trying to log in.
         autheticateUser: function(username, password) {
 
             var dfd = $q.defer();// promise
@@ -20,6 +22,20 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q) {
 
                     dfd.resolve(false);
                 }
+            });
+
+            return dfd.promise;
+        },
+
+        // log user out on requst.
+        logoutUser: function() {
+            var dfd = $q.defer();
+
+            $http.post('/logout', {logout:true} ).then(function() {         // {logout:true} is a random body to prevent the post getting turned into a get
+
+                mvIdentity.currentUser = undefined;                         // set the user to undefined
+                dfd.resolve();
+
             });
 
             return dfd.promise;

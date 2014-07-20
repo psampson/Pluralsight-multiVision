@@ -20,10 +20,21 @@ module.exports = function(app) {
     app.post('/login', auth.authenticate);
 
 
+    // user log out
+    // note: there is no redirect as page routing is all done in Angular on the client side.
+    app.post('/logout', function(req, res) {
+        req.logout();                           // logout method was added by the passport module
+        res.end();
+    });
+
+
+
     // For all other routes.  Deliver the index page.  This enables client side routing to work
     app.get('*', function (req, res) {
 
-        res.render('index');
+        res.render('index', {
+            bootstrappedUser: req.user       // make the current user object available to jade
+        });
 
     });
 
