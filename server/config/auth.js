@@ -3,7 +3,12 @@
  */
 
 // This is the user authentication logic which is called from routes.js
+
+
 var passport = require('passport');
+
+// --------------------------------------------------------------------------------------------------------------------
+// authenticate method.
 
 exports.authenticate = function (req, res, next) {
 
@@ -23,4 +28,41 @@ exports.authenticate = function (req, res, next) {
     });
 
     auth(req, res, next);                                               // call the auth function
+};
+
+
+// --------------------------------------------------------------------------------------------------------------------
+// function to ensure only authenticated users can see a list of users
+
+exports.requiresApiLogin = function(req, res, next) {
+    // check to make sure the current user is authenticated
+    if(!req.isAuthenticated()) {
+
+        res.status(403);
+        res.end();
+
+    } else {
+        next();
+    }
+};
+
+
+// --------------------------------------------------------------------------------------------------------------------
+// function to ensure only admins can see a list of all users.
+// this is used in the routes '/api/users' and is middle ware in app.get.  Express calls middle ware as a function so
+// in order to pass a parameter we need to return a function for use by express.
+
+exports.requiresRole = function(role) {
+    return function(req, res, next) {
+        if(!req.isAuthenticated() || req.user.roles.indexOf(role) === -1) {
+
+            res.status(403);
+            res.end();
+
+        } else {
+
+            next();
+
+        }
+    }
 };

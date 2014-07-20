@@ -28,7 +28,8 @@ module.exports = function(config) {
         lastName: String,
         username: String,
         salt: String,
-        hashed_pwd: String
+        hashed_pwd: String,
+        roles: [String]                 // array of strings
     });
 
     userSchema.methods = {
@@ -39,7 +40,7 @@ module.exports = function(config) {
     // define user model
     var User = mongoose.model('User', userSchema);
 
-    // see if there are any users and, if not, add some.
+    // create some default users in the database if there are none.
     User.find({}).exec(function(err, collection) {
 
         if(collection.length === 0) {
@@ -48,11 +49,11 @@ module.exports = function(config) {
 
             salt = createSalt();
             hash = hashPwd(salt, 'joe');
-            User.create({firstName: 'Joe', lastName:'Eames', username: 'joe', salt: salt, hashed_pwd: hash});
+            User.create({firstName: 'Joe', lastName:'Eames', username: 'joe', salt: salt, hashed_pwd: hash, roles:['admin']});
 
             salt = createSalt();
             hash = hashPwd(salt, 'john');
-            User.create({firstName: 'John', lastName:'Papa', username: 'john', salt: salt, hashed_pwd: hash});
+            User.create({firstName: 'John', lastName:'Papa', username: 'john', salt: salt, hashed_pwd: hash, roles: []});
 
             salt = createSalt();
             hash = hashPwd(salt, 'dan');

@@ -2,7 +2,7 @@
  * Created by colinyork on 20/07/2014.
  */
 
-angular.module('app').factory('mvAuth', function($http, mvIdentity, $q) {
+angular.module('app').factory('mvAuth', function($http, mvIdentity, $q, mvUser) {
     return {
 
         // authenticate user trying to log in.
@@ -15,7 +15,10 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q) {
 
                 if(response.data.success) {
 
-                    mvIdentity.currentUser = response.data.user;
+                    var user = new mvUser();
+                    angular.extend(user, response.data.user);
+
+                    mvIdentity.currentUser = user;
                     dfd.resolve(true);
 
                 } else {

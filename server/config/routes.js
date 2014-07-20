@@ -3,8 +3,20 @@
  */
 
 var auth = require('./auth');
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+
 
 module.exports = function(app) {
+
+    // get a list of all users.
+    app.get('/api/users', auth.requiresRole('admin'), function(req, res) {
+
+        User.find({}).exec(function(err, collection) {
+            res.send(collection);
+        })
+
+    });
 
     //--------------------------------------------------------------------------------------------------------------------
     // when some requests a partial, it will pull the relevant partial from /public/app directory or relevant
