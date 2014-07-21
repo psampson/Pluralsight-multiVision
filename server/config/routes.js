@@ -48,6 +48,7 @@ module.exports = function(app) {
             bootstrappedUser: req.user       // make the current user object available to jade
         });
 
+
     });
 
 

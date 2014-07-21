@@ -26,12 +26,12 @@ module.exports= function() {
                 // matched the hashed password stored in the database.  (see mongoose.js for authenticate method)
                 if (user && user.authenticate(password)) {
 
-                    console.log("Found user data : ", user);
+//                    console.log("Found user data : ", user);
                     return done(null, user);
 
                 } else {
 
-                    console.log("No user found.");
+//                    console.log("No user found.");
                     return done(null, false);
 
                 }

@@ -8,7 +8,7 @@ angular.module('app').controller('mvNavBarLoginCtrl', function($scope, $http, mv
     // sign in fields and controls
     $scope.signin = function(username, password) {
 
-        mvAuth.autheticateUser(username, password).then(function(success) {
+        mvAuth.authenticateUser(username, password).then(function(success) {
             if(success) {
                 mvNotifier.notify('You have successfully signed in!');
             } else {

@@ -17,6 +17,9 @@ angular.module('app').factory('mvIdentity', function($window, mvUser) {
         currentUser: currentUser,
         isAuthenticated: function() {
             return !!this.currentUser;       // if the currentUser exists, the !! operator forces a boolean true
+        },
+        isAuthorised: function(role) {
+            return !!this.currentUser && this.currentUser.roles.indexOf(role) > -1;
         }
     }
 });

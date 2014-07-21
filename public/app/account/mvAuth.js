@@ -6,7 +6,7 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q, mvUser) 
     return {
 
         // authenticate user trying to log in.
-        autheticateUser: function(username, password) {
+        authenticateUser: function(username, password) {
 
             var dfd = $q.defer();// promise
 
@@ -42,6 +42,13 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q, mvUser) 
             });
 
             return dfd.promise;
+        },
+        authorizeCurrentUserForRoute: function(role) {
+            if(mvIdentity.isAuthorised(role)) {
+                return true;
+            } else {
+                return $q.reject('not authorized');
+            }
         }
     }
 });
