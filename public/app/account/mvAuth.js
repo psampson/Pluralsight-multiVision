@@ -45,6 +45,22 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q, mvUser) 
             return dfd.promise;
         },
 
+        updateCurrentUser: function(newUserData) {
+            var dfd = $q.defer();
+
+            var clone = angular.copy(mvIdentity.currentUser);    // dont update the current user data yet until it is confirmed the changes are saved
+            angular.extend(clone, newUserData);                 // copy the new user data into the clone.
+            clone.$update().then(function() {                   // see mvUser resource for $update method
+                mvIdentity.currentUser = clone;
+                dfd.resolve();
+
+            }, function(response) {
+                dfd.reject(response.data.reason);
+            });
+
+            return dfd.promise;
+        },
+
         // log user out on requst.
         logoutUser: function() {
             var dfd = $q.defer();
@@ -60,6 +76,13 @@ angular.module('app').factory('mvAuth', function($http, mvIdentity, $q, mvUser) 
         },
         authorizeCurrentUserForRoute: function(role) {
             if(mvIdentity.isAuthorised(role)) {
+                return true;
+            } else {
+                return $q.reject('not authorized');
+            }
+        },
+        authorizeAuthenticatedUserForRoute: function() {
+            if(mvIdentity.isAuthenticated()) {
                 return true;
             } else {
                 return $q.reject('not authorized');

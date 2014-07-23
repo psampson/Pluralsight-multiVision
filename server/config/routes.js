@@ -16,6 +16,9 @@ module.exports = function(app) {
     // add a new user
     app.post('/api/users', users.createUser);
 
+    // update user
+    app.put('/api/users', users.updateUser);
+
     //--------------------------------------------------------------------------------------------------------------------
     // when some requests a partial, it  will pull the relevant partial from /public/app directory or relevant
     // subdirectory depending on req.params[0] passed in.
