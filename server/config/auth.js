@@ -12,6 +12,8 @@ var passport = require('passport');
 
 exports.authenticate = function (req, res, next) {
 
+    req.body.username = req.body.username.toLowerCase();                // convert usernames to lowercase.
+
     // define an authentication function.  This will effectively call the passport.use in server.js
     var auth = passport.authenticate('local', function(err, user) {
 

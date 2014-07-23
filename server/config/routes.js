@@ -3,6 +3,7 @@
  */
 
 var auth = require('./auth');
+var users = require('../controllers/users');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 
@@ -10,16 +11,13 @@ var User = mongoose.model('User');
 module.exports = function(app) {
 
     // get a list of all users.
-    app.get('/api/users', auth.requiresRole('admin'), function(req, res) {
+    app.get('/api/users', auth.requiresRole('admin'), users.getUsers);
 
-        User.find({}).exec(function(err, collection) {
-            res.send(collection);
-        })
-
-    });
+    // add a new user
+    app.post('/api/users', users.createUser);
 
     //--------------------------------------------------------------------------------------------------------------------
-    // when some requests a partial, it will pull the relevant partial from /public/app directory or relevant
+    // when some requests a partial, it  will pull the relevant partial from /public/app directory or relevant
     // subdirectory depending on req.params[0] passed in.
     app.get('/partials/*', function(req, res) {
 
