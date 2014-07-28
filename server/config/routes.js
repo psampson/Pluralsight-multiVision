@@ -24,6 +24,9 @@ module.exports = function(app) {
     // courses
     app.get('/api/courses', course.getCourses);
 
+    // course details
+    app.get('/api/courses/:id', course.getCourseById);
+
     //--------------------------------------------------------------------------------------------------------------------
     // when some requests a partial, it  will pull the relevant partial from /public/app directory or relevant
     // subdirectory depending on req.params[0] passed in.
