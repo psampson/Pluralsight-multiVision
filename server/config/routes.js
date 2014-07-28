@@ -6,6 +6,8 @@ var auth = require('./auth');
 var users = require('../controllers/users');
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
+var course = require('../controllers/courses');
+
 
 
 module.exports = function(app) {
@@ -18,6 +20,9 @@ module.exports = function(app) {
 
     // update user
     app.put('/api/users', users.updateUser);
+
+    // courses
+    app.get('/api/courses', course.getCourses);
 
     //--------------------------------------------------------------------------------------------------------------------
     // when some requests a partial, it  will pull the relevant partial from /public/app directory or relevant
@@ -40,7 +45,9 @@ module.exports = function(app) {
         res.end();
     });
 
-
+    app.all('/api/*', function(req,res) {       // all other api requests
+        res.send(404);
+    });
 
     // For all other routes.  Deliver the index page.  This enables client side routing to work
     app.get('*', function (req, res) {
